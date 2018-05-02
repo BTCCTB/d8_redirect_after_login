@@ -4,11 +4,11 @@
  
  * @file
  
- * Contains \Drupal\login_redirection\Form\LoginRedirectionForm.
+ * Contains \Drupal\redirect_after_login\Form\LoginRedirectionForm.
  
  */
  
-namespace Drupal\login_redirection\Form;
+namespace Drupal\redirect_after_login\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -25,7 +25,7 @@ class LoginRedirectionForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-  $savedPathRoles=\Drupal::config('login_redirection.settings')->get('login_redirection');
+  $savedPathRoles=\Drupal::config('redirect_after_login.settings')->get('login_redirection');
   $this->allUser = user_role_names();
   $form['roles'] = array(
     '#type' => 'fieldset',
@@ -37,7 +37,7 @@ class LoginRedirectionForm extends ConfigFormBase {
       '#title' => t($name),
 	  '#size' => 60,
 	  '#maxlength' => 128,
-          '#description' => t('Add a valid url or <\front> for main page'),
+          '#description' => t('Add a valid url or &ltfront> for main page'),
 	  '#required' => TRUE,
           '#default_value' => $savedPathRoles[$user],
     ];
@@ -48,6 +48,8 @@ class LoginRedirectionForm extends ConfigFormBase {
       '#value' => $this->t('Save'),
       '#button_type' => 'primary',
     ];
+    // Disable caching
+    $form['#cache']['max-age'] = 0;
     return $form;
   }
 
@@ -56,8 +58,9 @@ class LoginRedirectionForm extends ConfigFormBase {
    */
 public function validateForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->allUser as $user=>$name){
-      if(!preg_match('/[#?\/]+/',$form_state->getValue($user))){
-         $form_state->setErrorByName($form_state->getValue($user), t('This URL is not valid.'));
+      if(!(preg_match('/^[#?\/]+/',$form_state->getValue($user)) || $form_state->getValue($user)== '<front>' )){
+         $form_state->setErrorByName($user, t('This URL %url is not valid for role %role.', 
+                 array('%url' => $form_state->getValue($user),'%role' => $name)));
       }
     }
 }
@@ -75,7 +78,7 @@ public function validateForm(array &$form, FormStateInterface $form_state) {
         $form_state->getValue($user);
       }
     }
-    $this->config('login_redirection.settings')->set('login_redirection', $loginUrls)->save();
+    $this->config('redirect_after_login.settings')->set('login_redirection', $loginUrls)->save();
     
     parent::submitForm($form, $form_state);
 }
@@ -84,7 +87,7 @@ public function validateForm(array &$form, FormStateInterface $form_state) {
    */
   protected function getEditableConfigNames(): array {
     return [
-    'login_redirection.settings'
+    'redirect_after_login.settings'
     ];
   }
 
