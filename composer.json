@@ -3,12 +3,5 @@
   "description": "The simple Drupal module redirect user after login",
   "type": "drupal-module",
   "homepage": "https://drupal.org/project/redirect_after_login",
-  "authors": [
-    {
-      "name": "Shamsher Alam",
-      "homepage": "https://www.drupal.org/u/Shamsher_Alam",
-      "role": "Author"
-    }
-  ],
   "license": "GPL-2.0+"
 }
