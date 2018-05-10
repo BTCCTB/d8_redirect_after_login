@@ -2,8 +2,8 @@ name: Redirect After Login
 description: 'Redirect user after login to a configured url '
 package: Login Redirection
 type: module
-version: 1.0
+version: 2.0
 core: 8.x
-configure: redirect_after_login
+configure: redirect_after_login.admin_settings
 
   
