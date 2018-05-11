@@ -59,10 +59,16 @@ class LoginRedirectionForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    foreach ($this->allUser as $user => $name) {
-      if (!(preg_match('/^[#?\/]+/', $form_state->getValue($user)) || $form_state->getValue($user) == '<front>')) {
-        $form_state->setErrorByName($user, t('This URL %url is not valid for role %role.',
-          array('%url' => $form_state->getValue($user), '%role' => $name)));
+    $path='';  
+  foreach ($this->allUser as $user=>$name){
+      if(!(preg_match('/^[#?\/]+/',$form_state->getValue($user)) || $form_state->getValue($user)== '<front>' )){
+         $form_state->setErrorByName($user, t('This URL %url is not valid for role %role.', 
+                 array('%url' => $form_state->getValue($user),'%role' => $name)));
+      }
+      $path = $form_state->getValue($user);
+      $is_valid = \Drupal::service('path.validator')->isValid($path);
+      if($is_valid == NULL) {
+        $form_state->setErrorByName($user, t('Path does not exists.'));
       }
     }
   }
