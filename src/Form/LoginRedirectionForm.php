@@ -11,7 +11,6 @@
 namespace Drupal\redirect_after_login\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 class LoginRedirectionForm extends ConfigFormBase {
@@ -98,12 +97,12 @@ class LoginRedirectionForm extends ConfigFormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Get Editable config names.
+   *
+   * @inheritDoc
    */
-  protected function getEditableConfigNames(): array {
-    return [
-        'redirect_after_login.settings'
-    ];
+  protected function getEditableConfigNames() {
+    return ['redirect_after_login.settings'];
   }
 
 }
