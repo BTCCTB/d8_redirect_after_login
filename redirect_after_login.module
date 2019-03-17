@@ -8,6 +8,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
@@ -51,8 +52,24 @@ function redirect_after_login_help($route_name, RouteMatchInterface $route_match
  */
 function redirect_after_login_user_login($account) {
   $current_route = \Drupal::routeMatch()->getRouteName();
+  $destination = \Drupal::request()->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+  $config = \Drupal::config('redirect_after_login.settings');
+  $currentUrl = \Drupal::service('path.current')->getPath();
+  $urls = preg_split("/\\r\\n|\\r|\\n/", $config->get('exclude_urls'));
+  $pathMatcher = \Drupal::service('path.matcher');
+
+  // Check excluded urls.
+  foreach ($urls as $url) {
+    if ($pathMatcher->matchPath($currentUrl, $url)) {
+      return;
+    }
+  }
+
   if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
-    // We want to redirect user on login
+    // We want to redirect user on login.
     $current_user = \Drupal::currentUser();
     $username = $current_user->getRoles();
     $login_redirection = \Drupal::config('redirect_after_login.settings')
@@ -67,6 +84,4 @@ function redirect_after_login_user_login($account) {
       $homeResponse->send();
     }
   }
-
-  return;
 }
