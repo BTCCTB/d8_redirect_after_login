@@ -39,7 +39,7 @@ class LoginRedirectionForm extends ConfigFormBase {
           '#maxlength' => 128,
           '#description' => $this->t('Add a valid url or &ltfront> for main page'),
           '#required' => TRUE,
-          '#default_value' => $savedPathRoles[$user],
+          '#default_value' => isset($savedPathRoles[$user]) ? $savedPathRoles[$user] : '',
         ];
       }
     }
